@@ -114,7 +114,7 @@ public class source {
 				//available(conn,pstat);
 				break;
 			case 3:
-				//search(conn,pstat);
+				search(conn,pstat);
 				break;
 				
 			case 4:
@@ -212,15 +212,40 @@ public class source {
 	 *  - search() runs queries based on user input ?
 	 *  // how many criteria? year + model + make ? 
 	 */
-	public static void search(PreparedStatement pstat, Connection conn) {
+	public static void search(Connection conn, PreparedStatement pstat) {
 		int ch;
 		do {
+			
+			
 			System.out.println("Choose criteria number to search by." );
 			System.out.println("1:Year \n2:Make \n3:Model \n4:location \n0:Go Back");
 			ch = sc.nextInt();
 			
 			switch(ch) {
 			case 1:
+				try {
+					System.out.print("Enter the year(yyyy):");
+					sc.nextLine();
+					String in = sc.nextLine();
+					
+					String sqlY = "SELECT v_year, v_make, v_model, v_price FROM vehicle" +
+							" WHERE v_year = '" + in + "' ORDER BY v_year";
+					pstat = conn.prepareStatement(sqlY);
+					ResultSet rs = pstat.executeQuery();
+					while(rs.next()) {
+						//System.out.println("Inside rs.next");
+						System.out.print(rs.getString("v_year") + rs.getString("v_make") + rs.getString("v_model") + rs.getDouble("v_price"));
+						System.out.println();
+					}
+					/*
+					System.out.println("Select vehicle id or -1 to go back");
+					int vid = sc.nextInt();
+					if(vid = -1)
+						return;
+					else do what					
+					 */
+				}
+				catch(SQLException e) {}
 				break;
 			case 2:
 				break;
