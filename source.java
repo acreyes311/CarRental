@@ -78,6 +78,7 @@ public class source {
 	 *	- Search
 	 *	- Exit
 	 * 
+	 * ToDo ; Fix All Queries
 	 * 
 	 */
 	
@@ -147,6 +148,7 @@ public class source {
 		boolean flag = false;
 		System.out.println("Which location would you like to pick up at(id #)? ");
 		do {
+			// ***** NEED TO FIX DISPLAY ******
 			System.out.println("1	3 Roxbury Place	309-892-3092		IL\n" + 
 					"2	3 Orin Terrace	228-781-3694		MS\n" + 
 					"3	55481 Loftsgordon Court	916-229-5953		CA\n" + 
@@ -172,7 +174,8 @@ public class source {
 		System.out.println("What day would you like to pick up(mm-dd)? " );
 		String pickupDate = sc.nextLine();
 		
-		System.out.println("What day would you like to return(mm-dd)? ");
+		//System.out.println("What day would you like to return(mm-dd)? ");
+		System.out.println("How many days would you like to rent for? ");
 		String returnDate = sc.nextLine();
 		
 		System.out.println("These vehicles are available for rent on " + pickupDate + "\n");
@@ -223,6 +226,7 @@ public class source {
 			
 			switch(ch) {
 			case 1:
+				//  CASE 1 Print All vehicles from this year
 				try {
 					System.out.print("Enter the year(yyyy):");
 					sc.nextLine();
@@ -248,10 +252,87 @@ public class source {
 				catch(SQLException e) {}
 				break;
 			case 2:
+				// CASE 2 Print All vehicles with this Make name
+				try {
+					System.out.print("Enter the Make: ");
+					sc.nextLine();
+					String in = sc.nextLine();
+					
+					String sqlM = "SELECT v_year, v_make, v_model, v_price FROM vehicle" +
+							" WHERE v_make = '" + in + "' ORDER BY v_make";
+					pstat = conn.prepareStatement(sqlM);
+					ResultSet rs = pstat.executeQuery();
+					while(rs.next()) {
+						//System.out.println("Inside rs.next");
+						System.out.print(rs.getString("v_year") + rs.getString("v_make") + rs.getString("v_model") + rs.getDouble("v_price"));
+						System.out.println();
+					}
+				}
+				catch(SQLException e) {}
 				break;
 			case 3:
+				// CASE 3 Print all Vehicles with this MODEL name
+				try {
+					System.out.print("Enter the Model: ");
+					sc.nextLine();
+					String in = sc.nextLine();
+					
+					String sqlMod = "SELECT v_year, v_make, v_model, v_price FROM vehicle" +
+							" WHERE v_model = '" + in + "' ORDER BY v_model";
+					pstat = conn.prepareStatement(sqlMod);
+					ResultSet rs = pstat.executeQuery();
+					while(rs.next()) {
+						//System.out.println("Inside rs.next");
+						System.out.print(rs.getString("v_year") + rs.getString("v_make") + rs.getString("v_model") + rs.getDouble("v_price"));
+						System.out.println();
+					}
+				}
+				catch(SQLException e) {}
 				break;
+				
 			case 4:
+				//  CASE 4 Print location to display and wait for input.
+				// Is there a different way to display and get input, through sql?
+				// Then query to print all vehicles from that location.
+				int lID;
+				boolean flag = false;
+				System.out.println("Which location would you like to pick up at(id #)? ");
+				do {
+					// ***** NEED TO FIX DISPLAY ******
+					System.out.println("1	3 Roxbury Place	309-892-3092		IL\n" + 
+							"2	3 Orin Terrace	228-781-3694		MS\n" + 
+							"3	55481 Loftsgordon Court	916-229-5953		CA\n" + 
+							"4	0999 Ridgeway Point	307-124-5700		WY\n" + 
+							"5	1614 Anderson Avenue	704-828-5125		NC\n" + 
+							"6	51 Caliangt Park	816-722-4896		MO\n" + 
+							"7	935 Paget Plaza	606-997-5229		KY\n" + 
+							"8	052 Linden Avenue	518-812-4920		NY\n" + 
+							"9	3 Anderson Parkway	402-505-1603		NE\n" + 
+							"10	807 Pearson Drive	405-506-0323		OK\n" +
+							"0 Exit\n");
+					
+					lID = sc.nextInt();
+					if(lID == 0)
+						return;			
+					if(lID < 0 || lID > 10)
+						System.out.println("Invalid ID choose again");
+					else
+						flag = true;			
+					
+				}while(flag != true);
+				try {
+					// Print all vehicles from location (lID)
+					String sqlL = "SELECT * FROM location" +
+							" WHERE l_id = '" + lID + "' ORDER BY v_model";
+					pstat = conn.prepareStatement(sqlL);
+					ResultSet rs = pstat.executeQuery();
+					while(rs.next()) {
+						//System.out.println("Inside rs.next");
+						System.out.print(rs.getString("v_year") + rs.getString("v_make") + rs.getString("v_model") + rs.getDouble("v_price"));
+						System.out.println();
+					}
+				}
+				catch(SQLException e) {}
 				break;
 				
 			
