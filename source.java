@@ -35,6 +35,7 @@ public class source {
 			
 			ch = sc.nextInt();
 			switch (ch) {
+			//Case 1 Connects user to DB and calls Sub-Menu	
 			case 1:
 				try {
 				conn = DriverManager.getConnection("jdbc:sqlite:/home/andrew/Documents/SQLiteStudio/CarRental");
@@ -46,6 +47,8 @@ public class source {
 				}
 				catch(SQLException e) {}
 				break;
+			
+			// Case 2 Disconnects User From DB
 			case 2:
 				try {
 				conn.close();
@@ -70,7 +73,7 @@ public class source {
 	//public static void addCustomer
 	/*
 	 *- subMenu will first ask if new or return customer.
-	 *- if new -> get info -> create customer function???
+	 *- if new -> get info -> create customer (function?)
 	 *- else get name and proceed
 	 *- next menu will ask for what they want to do
 	 *	- Reserve
@@ -78,7 +81,7 @@ public class source {
 	 *	- Search
 	 *	- Exit
 	 * 
-	 * ToDo ; Fix All Queries
+	 * TODO: Fix All Queries
 	 * 
 	 */
 	
@@ -142,6 +145,8 @@ public class source {
 	 * - Take input
 	 * - Print out reser
 	 * 
+	 * TODO: - Fix Location Display
+	 * 		 - Fix All queries
 	 */
 	public static void reservation(Connection conn, PreparedStatement pstat) {
 		int lID;
@@ -149,16 +154,17 @@ public class source {
 		System.out.println("Which location would you like to pick up at(id #)? ");
 		do {
 			// ***** NEED TO FIX DISPLAY ******
-			System.out.println("1	3 Roxbury Place	309-892-3092		IL\n" + 
-					"2	3 Orin Terrace	228-781-3694		MS\n" + 
+			System.out.println(
+					"1	3 Roxbury Place			309-892-3092		IL\n" + 
+					"2	3 Orin Terrace			228-781-3694		MS\n" + 
 					"3	55481 Loftsgordon Court	916-229-5953		CA\n" + 
-					"4	0999 Ridgeway Point	307-124-5700		WY\n" + 
+					"4	0999 Ridgeway Point		307-124-5700		WY\n" + 
 					"5	1614 Anderson Avenue	704-828-5125		NC\n" + 
-					"6	51 Caliangt Park	816-722-4896		MO\n" + 
-					"7	935 Paget Plaza	606-997-5229		KY\n" + 
-					"8	052 Linden Avenue	518-812-4920		NY\n" + 
-					"9	3 Anderson Parkway	402-505-1603		NE\n" + 
-					"10	807 Pearson Drive	405-506-0323		OK\n" +
+					"6	51 Caliangt Park		816-722-4896		MO\n" + 
+					"7	935 Paget Plaza			606-997-5229		KY\n" + 
+					"8	052 Linden Avenue		518-812-4920		NY\n" + 
+					"9	3 Anderson Parkway		402-505-1603		NE\n" + 
+					"10	807 Pearson Drive		405-506-0323		OK\n" +
 					"0 Exit\n");
 			
 			lID = sc.nextInt();
@@ -196,7 +202,7 @@ public class source {
 			}
 			
 			
-			System.out.println("Choose a Vehicle or -1 to exit");
+			System.out.println("Choose a Vehicle or -1 to go back");
 			vch = sc.nextInt();
 			if(vch == -1)
 				return;
@@ -213,20 +219,20 @@ public class source {
 	
 	/*
 	 *  - search() runs queries based on user input ?
-	 *  // how many criteria? year + model + make ? 
+	 *  // how many criteria? year + model + make ? = A lot of work
 	 */
 	public static void search(Connection conn, PreparedStatement pstat) {
 		int ch;
-		do {
-			
+		do {		
 			
 			System.out.println("Choose criteria number to search by." );
 			System.out.println("1:Year \n2:Make \n3:Model \n4:location \n0:Go Back");
 			ch = sc.nextInt();
 			
 			switch(ch) {
+			//  CASE 1 Print All vehicles from this year	
 			case 1:
-				//  CASE 1 Print All vehicles from this year
+				
 				try {
 					System.out.print("Enter the year(yyyy):");
 					sc.nextLine();
@@ -241,18 +247,26 @@ public class source {
 						System.out.print(rs.getString("v_year") + rs.getString("v_make") + rs.getString("v_model") + rs.getDouble("v_price"));
 						System.out.println();
 					}
-					/*
-					System.out.println("Select vehicle id or -1 to go back");
+
+					
+					/********************************************************
+					System.out.println("Select vehicle id or enter -1 to go back");
 					int vid = sc.nextInt();
 					if(vid = -1)
 						return;
-					else do what					
-					 */
+					else do what
+						- Print: You have selected this (print.vehicle) would you like to reserve
+									* leads to even more user input, Maybe just take directly to reservation after choosing vid
+						- call to reservation
+							- if not go back to list					
+					 ****************************************************/
 				}
 				catch(SQLException e) {}
 				break;
+				
+			// CASE 2 Print All vehicles with this Make name
 			case 2:
-				// CASE 2 Print All vehicles with this Make name
+				
 				try {
 					System.out.print("Enter the Make: ");
 					sc.nextLine();
@@ -263,15 +277,29 @@ public class source {
 					pstat = conn.prepareStatement(sqlM);
 					ResultSet rs = pstat.executeQuery();
 					while(rs.next()) {
-						//System.out.println("Inside rs.next");
+						// May need to add spaces " " ?						
 						System.out.print(rs.getString("v_year") + rs.getString("v_make") + rs.getString("v_model") + rs.getDouble("v_price"));
 						System.out.println();
 					}
+					/********************************************************
+					System.out.println("Select vehicle id or enter -1 to go back");
+					int vid = sc.nextInt();
+					if(vid = -1)
+						return;
+					else do what
+						- Print: You have selected this (print.vehicle) would you like to reserve
+									* leads to even more user input, Maybe just take directly to reservation after choosing vid
+						- call to reservation
+							- if not go back to list					
+					 ****************************************************/
 				}
 				catch(SQLException e) {}
 				break;
-			case 3:
-				// CASE 3 Print all Vehicles with this MODEL name
+			
+
+
+			// CASE 3 Print all Vehicles with this MODEL name			
+			case 3:				
 				try {
 					System.out.print("Enter the Model: ");
 					sc.nextLine();
@@ -282,33 +310,47 @@ public class source {
 					pstat = conn.prepareStatement(sqlMod);
 					ResultSet rs = pstat.executeQuery();
 					while(rs.next()) {
-						//System.out.println("Inside rs.next");
+						// May need to add spaces " " ?	
 						System.out.print(rs.getString("v_year") + rs.getString("v_make") + rs.getString("v_model") + rs.getDouble("v_price"));
 						System.out.println();
 					}
+
+					/********************************************************
+					System.out.println("Select vehicle id or enter -1 to go back");
+					int vid = sc.nextInt();
+					if(vid = -1)
+						return;
+					else do what
+						- Print: You have selected this (print.vehicle) would you like to reserve
+									* leads to even more user input, Maybe just take directly to reservation after choosing vid
+						- call to reservation
+							- if not go back to list					
+					 ****************************************************/
 				}
 				catch(SQLException e) {}
 				break;
-				
+
+			//  CASE 4 Print location to display and wait for input.
+			// Is there a different way to display and get input, through sql?
+			// Then query to print all vehicles from that location.	
 			case 4:
-				//  CASE 4 Print location to display and wait for input.
-				// Is there a different way to display and get input, through sql?
-				// Then query to print all vehicles from that location.
+				
 				int lID;
 				boolean flag = false;
-				System.out.println("Which location would you like to pick up at(id #)? ");
+				System.out.println("Which location would you like to display? Enter id # ");
 				do {
 					// ***** NEED TO FIX DISPLAY ******
-					System.out.println("1	3 Roxbury Place	309-892-3092		IL\n" + 
-							"2	3 Orin Terrace	228-781-3694		MS\n" + 
+					System.out.println(
+							"1	3 Roxbury Place			309-892-3092		IL\n" + 
+							"2	3 Orin Terrace			228-781-3694		MS\n" + 
 							"3	55481 Loftsgordon Court	916-229-5953		CA\n" + 
-							"4	0999 Ridgeway Point	307-124-5700		WY\n" + 
+							"4	0999 Ridgeway Point		307-124-5700		WY\n" + 
 							"5	1614 Anderson Avenue	704-828-5125		NC\n" + 
-							"6	51 Caliangt Park	816-722-4896		MO\n" + 
-							"7	935 Paget Plaza	606-997-5229		KY\n" + 
-							"8	052 Linden Avenue	518-812-4920		NY\n" + 
-							"9	3 Anderson Parkway	402-505-1603		NE\n" + 
-							"10	807 Pearson Drive	405-506-0323		OK\n" +
+							"6	51 Caliangt Park		816-722-4896		MO\n" + 
+							"7	935 Paget Plaza			606-997-5229		KY\n" + 
+							"8	052 Linden Avenue		518-812-4920		NY\n" + 
+							"9	3 Anderson Parkway		402-505-1603		NE\n" + 
+							"10	807 Pearson Drive		405-506-0323		OK\n" +
 							"0 Exit\n");
 					
 					lID = sc.nextInt();
@@ -327,10 +369,21 @@ public class source {
 					pstat = conn.prepareStatement(sqlL);
 					ResultSet rs = pstat.executeQuery();
 					while(rs.next()) {
-						//System.out.println("Inside rs.next");
+						// Fix spacing
 						System.out.print(rs.getString("v_year") + rs.getString("v_make") + rs.getString("v_model") + rs.getDouble("v_price"));
 						System.out.println();
 					}
+					/********************************************************
+					System.out.println("Select vehicle id or enter -1 to go back");
+					int vid = sc.nextInt();
+					if(vid = -1)
+						return;
+					else do what
+						- Print: You have selected this (print.vehicle) would you like to reserve
+									* leads to even more user input, Maybe just take directly to reservation after choosing vid
+						- call to reservation
+							- if not go back to list					
+					 ****************************************************/
 				}
 				catch(SQLException e) {}
 				break;
