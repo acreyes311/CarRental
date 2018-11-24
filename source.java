@@ -139,11 +139,11 @@ public class source {
 	 * 		1. location
 	 * 		2. pickup date
 	 *  	3. return date
-	 *  	4. number of passengers
+	 *  	4. Car Type
 	 *  
 	 * - Query out list of cars available from location fitting date and passenger constraints
 	 * - Take input
-	 * - Print out reser
+	 * - Print out reservation
 	 * 
 	 * TODO: - Fix Location Display
 	 * 		 - Fix All queries
@@ -186,7 +186,7 @@ public class source {
 		
 		System.out.println("These vehicles are available for rent on " + pickupDate + "\n");
 		
-		int vch;
+		int vch;	//vehicle choice
 		
 		// *******  NEED VEHICLE ID FOR SEARCH *********
 		// *******  LINK BETWEEN V_ID and L_ID *********
@@ -394,5 +394,22 @@ public class source {
 		
 		
 	}
+	/** 
+	 * - return() asks for Vid,Odom, Dropoff location
+	 * - 
+	 */
+	public static void return(Connection conn, PreparedStatement pstat) {
+		
+	}
 
+	/**
+	 * - billing()
+	 * - Input
+	 * 		- Get Customer Name
+	 * - Search DB for most recent rental or all of customers transactions?
+	 * - Display info to customer
+	 */
+	public static void billing(Connection conn, PreparedStatement pstat) {
+
+	}
 }
