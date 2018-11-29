@@ -77,8 +77,8 @@ public class source {
 	 *- else get name and proceed
 	 *- next menu will ask for what they want to do
 	 *	- Reserve
-	 *	- Cars Available
-	 *	- Search
+	 *	- Search/ Cars Available
+	 *  - 
 	 *	- Exit
 	 * 
 	 * TODO: Fix All Queries
@@ -114,21 +114,17 @@ public class source {
 			case 1:
 				reservation(conn, pstat);
 				break;
+
 			case 2:
-				//available(conn,pstat);
-				break;
-			case 3:
 				search(conn,pstat);
 				break;
 				
-			case 4:
-				//return(conn,pstat);
-				break;
-			case 5:
+			case 3: 
 				//cancelRes(conn, pstat);
 				break;
-			case 6:
+			case 4:
 				//billing(conn, pstat);
+				//
 				break;
 			}
 		}while(ch!= 0);
@@ -142,7 +138,7 @@ public class source {
 	 *  	4. Car Type
 	 *  
 	 * - Query out list of cars available from location fitting date and passenger constraints
-	 * - Take input
+	 * - Take input / NAME/ l_id /
 	 * - Print out reservation
 	 * 
 	 * TODO: - Fix Location Display
@@ -211,15 +207,12 @@ public class source {
 			
 		}
 		catch (SQLException e) {}
-	}
-	
-	
-	
+	}	
 	
 	
 	/*
 	 *  - search() runs queries based on user input ?
-	 *  // how many criteria? year + model + make ? = A lot of work
+	 *  // how many criteria? year + model + make ? = A lot of input/work
 	 */
 	public static void search(Connection conn, PreparedStatement pstat) {
 		int ch;
@@ -231,8 +224,7 @@ public class source {
 			
 			switch(ch) {
 			//  CASE 1 Print All vehicles from this year	
-			case 1:
-				
+			case 1:				
 				try {
 					System.out.print("Enter the year(yyyy):");
 					sc.nextLine();
@@ -340,7 +332,7 @@ public class source {
 				System.out.println("Which location would you like to display? Enter id # ");
 				do {
 					// ***** NEED TO FIX DISPLAY ******
-					System.out.println(
+					System.out.println (
 							"1	3 Roxbury Place			309-892-3092		IL\n" + 
 							"2	3 Orin Terrace			228-781-3694		MS\n" + 
 							"3	55481 Loftsgordon Court	916-229-5953		CA\n" + 
@@ -396,7 +388,7 @@ public class source {
 	}
 	/** 
 	 * - return() asks for Vid,Odom, Dropoff location
-	 * - 
+	 * - update vehicle
 	 */
 	public static void return(Connection conn, PreparedStatement pstat) {
 		
@@ -408,6 +400,7 @@ public class source {
 	 * 		- Get Customer Name
 	 * - Search DB for most recent rental or all of customers transactions?
 	 * - Display info to customer
+	 * - Update Vehicle Count +1
 	 */
 	public static void billing(Connection conn, PreparedStatement pstat) {
 
