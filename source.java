@@ -102,6 +102,7 @@ public class source {
 		
 		if (ch == 2) {
 			System.out.println("Enter Your Full Name:");
+			
 			retName = sc.nextLine();
 		}
 		
@@ -178,33 +179,74 @@ public class source {
 		
 		//System.out.println("What day would you like to return(mm-dd)? ");
 		System.out.println("How many days would you like to rent for? ");
-		String returnDate = sc.nextLine();
-		
+		int returnDate = sc.nextInt();
+		//---------MAY NEED to sc.nectLine();
 		System.out.println("These vehicles are available for rent on " + pickupDate + "\n");
 		
 		int vch;	//vehicle choice
 		
-		// *******  NEED VEHICLE ID FOR SEARCH *********
-		// *******  LINK BETWEEN V_ID and L_ID *********
+		/*
+		 		Put reservation ID in location table?
+				can go from reservation -> location but not location -> reservation
+		*/
 		try {
-			String sql = "SELECT v_id,v_year,v_make, v_model,v_price FROM vehicle WHERE l_id = other_lid AND ";
+			String sql = "SELECT v_id,v_year,v_make, v_model,v_price FROM vehicle,reservation WHERE res_locationid = " + lID +
+						" AND res_vehicleid = v_vehicleid";
 			pstat = conn.prepareStatement(sql);
 			ResultSet rs = pstat.executeQuery();
 			
 			while(rs.next()) {
-				System.out.println("id no. " + rs.getInt("v_id") + rs.getString("v_year") + rs.getString("v_make") + 
+				System.out.println("\nid no. " + rs.getInt("v_id") + rs.getString("v_year") + rs.getString("v_make") + 
 						rs.getString("v_model") + rs.getString("v_price"));
 				
 			}
 			
 			
-			System.out.println("Choose a Vehicle or -1 to go back");
+			System.out.println("Choose a Vehicle id or -1 to go back");
 			vch = sc.nextInt();
 			if(vch == -1)
-				return;
+				return;			
 			
-			// NOW RESERVE ? add to reservation, get reservation id
+			// ----------- TOOK OUT returndate AND returnrentalid from table
+			String sqlIn = "insert into reservation(res_reservationid, res_rentalid, res_locationid, res_pickupdate, " + 
+						" res_custid, res_vehicleid) values(?,?,?,?,?,?)";
+
+			// Variables to store max
+			int resid,rentalid,custid;
+
+			// Query for reservationid max and increment++
+			String resmax = "SELECT MAX(res_reservationid) FROM reservation";
+			pstat = conn.prepareStatement(resmax);
+			rs = pstat.executeQuery();
+			resid = rs.getInt("MAX(res_reservationid)");
+			resid++;
+
+			// Query for MAX rentalid and increment++
+			String rentmax = "SELECT MAX(r_rentalid) FROM rental";
+			pstat = conn.prepareStatement(rentmax);
+			rs = pstat.executeQuery();
+			rentalid = rs.getInt("MAX(r_rentalid)");
+			rentalid++;
+
+			// Query for MAX custid and increment++
+			String custmax = "SELECT MAX(c_custid) FROM customer";
+			pstat = conn.prepareStatement(custmax);
+			rs = pstat.executeQuery();
+			custid = rs.getInt("MAX(c_custid)");
+			custid++;
+			sc.nextLine();	
+
+			pstat = conn.prepareStatement(sqlIn);
 			
+			pstat.setInt(1,resid);
+			pstat.setInt(2,rentalid);			
+			pstat.setInt(3,lID);
+			pstat.setString(4,pickupDate);
+			pstat.setInt(5,custid);
+			pstat.setInt(6,vch);
+			pstat.executeUpdate();
+
+			// ----------------------- PRINT OUT INFO RESID VEHICLE DATE TO PICK UP ---------------
 		}
 		catch (SQLException e) {}
 	}	
@@ -221,37 +263,80 @@ public class source {
 			System.out.println("Choose criteria number to search by." );
 			System.out.println("1:Year \n2:Make \n3:Model \n4:location \n0:Go Back");
 			ch = sc.nextInt();
-			
+			int lID = 0;
 			switch(ch) {
 			//  CASE 1 Print All vehicles from this year	
 			case 1:				
 				try {
 					System.out.print("Enter the year(yyyy):");
-					sc.nextLine();
-					String in = sc.nextLine();
+					//sc.nextLine();
+					String year = sc.nextLine();
 					
-					String sqlY = "SELECT v_year, v_make, v_model, v_price FROM vehicle" +
-							" WHERE v_year = '" + in + "' ORDER BY v_year";
+					String sqlY = "SELECT v_year, v_make, v_model, v_price, res_locaionid FROM vehicle,reservation" +
+							" WHERE v_year = '" + year + "' AND v_vehicleid = res_vehicleid ORDER BY v_year";
 					pstat = conn.prepareStatement(sqlY);
 					ResultSet rs = pstat.executeQuery();
 					while(rs.next()) {
-						//System.out.println("Inside rs.next");
+						
 						System.out.print(rs.getString("v_year") + rs.getString("v_make") + rs.getString("v_model") + rs.getDouble("v_price"));
+						lID = rs.getInt("res_locationid");
+						System.out.print(" " + lID);
 						System.out.println();
 					}
-
 					
-					/********************************************************
-					System.out.println("Select vehicle id or enter -1 to go back");
+				
+					System.out.println("Select vehicle id to begin reservation or enter -1 to go back");
 					int vid = sc.nextInt();
-					if(vid = -1)
-						return;
-					else do what
-						- Print: You have selected this (print.vehicle) would you like to reserve
-									* leads to even more user input, Maybe just take directly to reservation after choosing vid
-						- call to reservation
-							- if not go back to list					
-					 ****************************************************/
+					if(vid == -1)
+						break;
+
+					System.out.println("What day would you like to pick up(mm-dd)? " );
+					String pickupDate = sc.nextLine();
+						
+					
+					System.out.println("How many days would you like to rent for? ");
+					int returnDate = sc.nextInt();
+
+					String sqlIn = "insert into reservation(res_reservationid, res_rentalid, res_locationid, res_pickupdate, " + 
+						" res_custid, res_vehicleid) values(?,?,?,?,?,?)";
+
+					// Variables to store max
+					int resid,rentalid,custid;
+
+					// Query for reservationid max and increment++
+					String resmax = "SELECT MAX(res_reservationid) FROM reservation";
+					pstat = conn.prepareStatement(resmax);
+					rs = pstat.executeQuery();
+					resid = rs.getInt("MAX(res_reservationid)");
+					resid++;
+
+					// Query for MAX rentalid and increment++
+					String rentmax = "SELECT MAX(r_rentalid) FROM rental";
+					pstat = conn.prepareStatement(rentmax);
+					rs = pstat.executeQuery();
+					rentalid = rs.getInt("MAX(r_rentalid)");
+					rentalid++;
+
+					// Query for MAX custid and increment++
+					String custmax = "SELECT MAX(c_custid) FROM customer";
+					pstat = conn.prepareStatement(custmax);
+					rs = pstat.executeQuery();
+					custid = rs.getInt("MAX(c_custid)");
+					custid++;
+					sc.nextLine();	
+
+					pstat = conn.prepareStatement(sqlIn);
+					
+					pstat.setInt(1,resid);
+					pstat.setInt(2,rentalid);			
+					pstat.setInt(3,lID);
+					pstat.setString(4,pickupDate);
+					pstat.setInt(5,custid);
+					pstat.setInt(6,vid);
+					pstat.executeUpdate();
+					
+					// ----------------------- PRINT OUT INFO RESID VEHICLE DATE TO PICK UP ---------------
+					
 				}
 				catch(SQLException e) {}
 				break;
@@ -260,30 +345,70 @@ public class source {
 			case 2:
 				
 				try {
-					System.out.print("Enter the Make: ");
+					System.out.print("Enter the Make(ALL CAPS): ");
 					sc.nextLine();
 					String in = sc.nextLine();
 					
-					String sqlM = "SELECT v_year, v_make, v_model, v_price FROM vehicle" +
-							" WHERE v_make = '" + in + "' ORDER BY v_make";
+					String sqlM = "SELECT v_year, v_make, v_model, v_price, res_locationid FROM vehicle,reservation" +
+							" WHERE v_make = '" + in + "' AND v_vehicleid = res_vehicleid ORDER BY v_make";
 					pstat = conn.prepareStatement(sqlM);
 					ResultSet rs = pstat.executeQuery();
 					while(rs.next()) {
 						// May need to add spaces " " ?						
-						System.out.print(rs.getString("v_year") + rs.getString("v_make") + rs.getString("v_model") + rs.getDouble("v_price"));
+						System.out.print(rs.getString("v_year") + rs.getString("v_make") + rs.getString("v_model") + rs.getDouble("v_price") + rs.getInt("res_locationid"));
 						System.out.println();
 					}
-					/********************************************************
-					System.out.println("Select vehicle id or enter -1 to go back");
+					System.out.println("Select vehicle id to begin reservation or enter -1 to go back");
 					int vid = sc.nextInt();
-					if(vid = -1)
-						return;
-					else do what
-						- Print: You have selected this (print.vehicle) would you like to reserve
-									* leads to even more user input, Maybe just take directly to reservation after choosing vid
-						- call to reservation
-							- if not go back to list					
-					 ****************************************************/
+					if(vid == -1)
+						break;
+
+					System.out.println("What day would you like to pick up(mm-dd)? " );
+					String pickupDate = sc.nextLine();
+						
+					
+					System.out.println("How many days would you like to rent for? ");
+					int returnDate = sc.nextInt();
+
+					String sqlIn = "insert into reservation(res_reservationid, res_rentalid, res_locationid, res_pickupdate, " + 
+						" res_custid, res_vehicleid) values(?,?,?,?,?,?)";
+
+					// Variables to store max
+					int resid,rentalid,custid;
+
+					// Query for reservationid max and increment++
+					String resmax = "SELECT MAX(res_reservationid) FROM reservation";
+					pstat = conn.prepareStatement(resmax);
+					rs = pstat.executeQuery();
+					resid = rs.getInt("MAX(res_reservationid)");
+					resid++;
+
+					// Query for MAX rentalid and increment++
+					String rentmax = "SELECT MAX(r_rentalid) FROM rental";
+					pstat = conn.prepareStatement(resmax);
+					rs = pstat.executeQuery();
+					rentalid = rs.getInt("MAX(r_rentalid)");
+					rentalid++;
+
+					// Query for MAX custid and increment++
+					String custmax = "SELECT MAX(c_custid) FROM customer";
+					pstat = conn.prepareStatement(resmax);
+					rs = pstat.executeQuery();
+					custid = rs.getInt("MAX(c_custid)");
+					custid++;
+					sc.nextLine();	
+
+					pstat = conn.prepareStatement(sqlIn);
+					
+					pstat.setInt(1,resid);
+					pstat.setInt(2,rentalid);			
+					pstat.setInt(3,lID);
+					pstat.setString(4,pickupDate);
+					pstat.setInt(5,custid);
+					pstat.setInt(6,vid);
+					pstat.executeUpdate();
+					
+					// ----------------------- PRINT OUT INFO RESID VEHICLE DATE TO PICK UP ---------------
 				}
 				catch(SQLException e) {}
 				break;
@@ -293,12 +418,12 @@ public class source {
 			// CASE 3 Print all Vehicles with this MODEL name			
 			case 3:				
 				try {
-					System.out.print("Enter the Model: ");
+					System.out.print("Enter the Model(CAPS): ");
 					sc.nextLine();
 					String in = sc.nextLine();
 					
-					String sqlMod = "SELECT v_year, v_make, v_model, v_price FROM vehicle" +
-							" WHERE v_model = '" + in + "' ORDER BY v_model";
+					String sqlMod = "SELECT v_year, v_make, v_model, v_price, res_locationid FROM vehicle,reservation" +
+							" WHERE v_model = '" + in + "' AND v_vehicleid = res_vehicleid ORDER BY v_model";
 					pstat = conn.prepareStatement(sqlMod);
 					ResultSet rs = pstat.executeQuery();
 					while(rs.next()) {
@@ -307,17 +432,58 @@ public class source {
 						System.out.println();
 					}
 
-					/********************************************************
-					System.out.println("Select vehicle id or enter -1 to go back");
+					System.out.println("Select vehicle id to begin reservation or enter -1 to go back");
+
 					int vid = sc.nextInt();
-					if(vid = -1)
-						return;
-					else do what
-						- Print: You have selected this (print.vehicle) would you like to reserve
-									* leads to even more user input, Maybe just take directly to reservation after choosing vid
-						- call to reservation
-							- if not go back to list					
-					 ****************************************************/
+					if(vid == -1)
+						break;
+
+					System.out.println("What day would you like to pick up(mm-dd)? " );
+					String pickupDate = sc.nextLine();
+						
+					
+					System.out.println("How many days would you like to rent for? ");
+					int returnDate = sc.nextInt();
+
+					String sqlIn = "insert into reservation(res_reservationid, res_rentalid, res_locationid, res_pickupdate, " + 
+						" res_custid, res_vehicleid) values(?,?,?,?,?,?)";
+
+					// Variables to store max
+					int resid,rentalid,custid;
+
+					// Query for reservationid max and increment++
+					String resmax = "SELECT MAX(res_reservationid) FROM reservation";
+					pstat = conn.prepareStatement(resmax);
+					rs = pstat.executeQuery();
+					resid = rs.getInt("MAX(res_reservationid)");
+					resid++;
+
+					// Query for MAX rentalid and increment++
+					String rentmax = "SELECT MAX(r_rentalid) FROM rental";
+					pstat = conn.prepareStatement(resmax);
+					rs = pstat.executeQuery();
+					rentalid = rs.getInt("MAX(r_rentalid)");
+					rentalid++;
+
+					// Query for MAX custid and increment++
+					String custmax = "SELECT MAX(c_custid) FROM customer";
+					pstat = conn.prepareStatement(resmax);
+					rs = pstat.executeQuery();
+					custid = rs.getInt("MAX(c_custid)");
+					custid++;
+					sc.nextLine();	
+
+					pstat = conn.prepareStatement(sqlIn);
+					
+					pstat.setInt(1,resid);
+					pstat.setInt(2,rentalid);			
+					pstat.setInt(3,lID);
+					pstat.setString(4,pickupDate);
+					pstat.setInt(5,custid);
+					pstat.setInt(6,vid);
+					pstat.executeUpdate();
+					
+					// ----------------------- PRINT OUT INFO RESID VEHICLE DATE TO PICK UP ---------------
 				}
 				catch(SQLException e) {}
 				break;
@@ -327,7 +493,7 @@ public class source {
 			// Then query to print all vehicles from that location.	
 			case 4:
 				
-				int lID;
+				//int lID;
 				boolean flag = false;
 				System.out.println("Which location would you like to display? Enter id # ");
 				do {
@@ -356,53 +522,96 @@ public class source {
 				}while(flag != true);
 				try {
 					// Print all vehicles from location (lID)
-					String sqlL = "SELECT * FROM location" +
-							" WHERE l_id = '" + lID + "' ORDER BY v_model";
-					pstat = conn.prepareStatement(sqlL);
+					String sql = "SELECT v_id,v_year,v_make, v_model,v_price FROM vehicle,reservation WHERE res_locationid = " + lID +
+						" AND res_vehicleid = v_vehicleid";
+					pstat = conn.prepareStatement(sql);
 					ResultSet rs = pstat.executeQuery();
+			
 					while(rs.next()) {
-						// Fix spacing
-						System.out.print(rs.getString("v_year") + rs.getString("v_make") + rs.getString("v_model") + rs.getDouble("v_price"));
-						System.out.println();
+						System.out.println("\nid no. " + rs.getInt("v_id") + rs.getString("v_year") + rs.getString("v_make") + 
+						rs.getString("v_model") + rs.getString("v_price"));						
 					}
-					/********************************************************
-					System.out.println("Select vehicle id or enter -1 to go back");
+					System.out.println("Select vehicle id to begin reservation or enter -1 to go back");
+
 					int vid = sc.nextInt();
-					if(vid = -1)
-						return;
-					else do what
-						- Print: You have selected this (print.vehicle) would you like to reserve
-									* leads to even more user input, Maybe just take directly to reservation after choosing vid
-						- call to reservation
-							- if not go back to list					
-					 ****************************************************/
+					if(vid == -1)
+						break;
+
+					System.out.println("What day would you like to pick up(mm-dd)? " );
+					String pickupDate = sc.nextLine();
+						
+					
+					System.out.println("How many days would you like to rent for? ");
+					int returnDate = sc.nextInt();
+
+					String sqlIn = "insert into reservation(res_reservationid, res_rentalid, res_locationid, res_pickupdate, " + 
+						" res_custid, res_vehicleid) values(?,?,?,?,?,?)";
+
+					// Variables to store max
+					int resid,rentalid,custid;
+
+					// Query for reservationid max and increment++
+					String resmax = "SELECT MAX(res_reservationid) FROM reservation";
+					pstat = conn.prepareStatement(resmax);
+					rs = pstat.executeQuery();
+					resid = rs.getInt("MAX(res_reservationid)");
+					resid++;
+
+					// Query for MAX rentalid and increment++
+					String rentmax = "SELECT MAX(r_rentalid) FROM rental";
+					pstat = conn.prepareStatement(resmax);
+					rs = pstat.executeQuery();
+					rentalid = rs.getInt("MAX(r_rentalid)");
+					rentalid++;
+
+					// Query for MAX custid and increment++
+					String custmax = "SELECT MAX(c_custid) FROM customer";
+					pstat = conn.prepareStatement(resmax);
+					rs = pstat.executeQuery();
+					custid = rs.getInt("MAX(c_custid)");
+					custid++;
+					sc.nextLine();	
+
+					pstat = conn.prepareStatement(sqlIn);
+					
+					pstat.setInt(1,resid);
+					pstat.setInt(2,rentalid);			
+					pstat.setInt(3,lID);
+					pstat.setString(4,pickupDate);
+					pstat.setInt(5,custid);
+					pstat.setInt(6,vid);
+					pstat.executeUpdate();
+					
+					// ----------------------- PRINT OUT INFO RESID VEHICLE DATE TO PICK UP ---------------
 				}
-				catch(SQLException e) {}
-				break;
 				
+				catch(SQLException e) {}
+				break;				
 			
 			}
 		}while(ch != 0);
 		
 		
 	}
-	/** 
+	/*
+	* 
 	 * - return() asks for Vid,Odom, Dropoff location
 	 * - update vehicle
-	 */
+	 
 	public static void return(Connection conn, PreparedStatement pstat) {
 		
 	}
 
-	/**
+	
 	 * - billing()
 	 * - Input
 	 * 		- Get Customer Name
 	 * - Search DB for most recent rental or all of customers transactions?
 	 * - Display info to customer
 	 * - Update Vehicle Count +1
-	 */
+	 *
 	public static void billing(Connection conn, PreparedStatement pstat) {
 
 	}
+	*/
 }
