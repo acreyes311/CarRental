@@ -28,7 +28,7 @@ public class source {
 	
 	public static void menu(Connection conn, PreparedStatement pstat) {
 			
-		//pstat = conn.prepareStatement();
+		
 		int ch;
 		do {
 			System.out.println("\n\n1:Connect to CarRental System \n2:Disconnect \n0:Exit");
@@ -38,7 +38,7 @@ public class source {
 			//Case 1 Connects user to DB and calls Sub-Menu	
 			case 1:
 				try {
-				conn = DriverManager.getConnection("jdbc:sqlite:/home/andrew/Documents/SQLiteStudio/CarRental2");
+				conn = DriverManager.getConnection("jdbc:sqlite:/home/andrew/Documents/SQLiteStudio/CarRental3	");
 				
 				System.out.println("CONNECTED TO CARRENTAL DATABASE\n");
 				 // Call Sub-Menu //
@@ -93,6 +93,12 @@ public class source {
 		int rentalid = rs.getInt("MAX(c_rentalid)");
 		rentalid++;
 		
+		String billmax = "SELECT MAX(b_billid) FROM billing";
+		pstat = conn.prepareStatement(billmax);
+		rs = pstat.executeQuery();
+		int billid = rs.getInt("MAX(b_billid)");
+		billid++;
+		
 		String sqlIn = "insert into customer(c_custid, c_name, c_rentalid, c_address, c_state) " + 
 				"  values(?,?,?,?,?)";
 		pstat = conn.prepareStatement(sqlIn);
@@ -104,8 +110,21 @@ public class source {
 		
 		
 		pstat.executeUpdate();
-		System.out.println("Table updated");
 		
+		String sqlBill = "insert into billing(b_billid, b_custid, b_vehicleid, b_pickupdate, b_daysrented,b_cctype) " + 
+				"  values(?,?,?,?,?,?)";
+		pstat = conn.prepareStatement(sqlBill);
+		pstat.setInt(1,billid);
+		pstat.setInt(2,custid);			
+		pstat.setInt(3,0);
+		pstat.setString(4,"n/a");
+		pstat.setInt(5,0);
+		pstat.setString(6,"n/a");
+		
+		pstat.executeUpdate();
+		
+		System.out.print("Welcome " + name);
+		System.out.println("  cust id no." + custid);
 		
 		}
 		catch(SQLException e) {}
@@ -268,9 +287,7 @@ public class source {
 			custid++;
 			
 			
-			//sc.nextLine();	
-			System.out.println("After CUSTMAX BEFORE UPDATE ");
-			//pstat = conn.prepareStatement(sqlIn);
+			
 			String sqlIn = "insert into reservation(res_reservationid, res_rentalid, res_locationid, res_pickup, " + 
 					" res_custid, res_vehicleid) values(?,?,?,?,?,?)";
 			pstat = conn.prepareStatement(sqlIn);
@@ -282,12 +299,13 @@ public class source {
 			pstat.setInt(6,vid);
 			
 			pstat.executeUpdate();
+			
 			System.out.println("Reservation Made Successfully");
 			System.out.println("Reservation ID: " + resid);
 			System.out.println("Pickup date:" + pickupDate);
 			System.out.println("At location " + lID);
-
-			// ----------------------- PRINT OUT INFO RESID VEHICLE DATE TO PICK UP ---------------
+			
+			
 		}
 		catch (SQLException e) {}
 	}	
@@ -314,13 +332,13 @@ public class source {
 					//sc.nextLine();
 					String year = sc.nextLine();
 					
-					String sqlY = "SELECT res_locationid, v_year, v_make, v_model, v_price FROM vehicle,reservation" +
+					String sqlY = "SELECT v_vehicleid, v_year, v_make, v_model, v_price FROM vehicle,reservation" +
 							" WHERE v_year = '" + year + "' AND v_vehicleid = res_vehicleid ORDER BY v_year";
 					pstat = conn.prepareStatement(sqlY);
 					ResultSet rs = pstat.executeQuery();
 					while(rs.next()) {
-						lID = rs.getInt("res_locationid");
-						System.out.print("id." + lID + " " + rs.getString("v_year") + " " + rs.getString("v_make") + " " + rs.getString("v_model") + 
+						lID = rs.getInt("v_vehicleid");
+						System.out.print("Location:" + lID + " " + rs.getString("v_year") + " " + rs.getString("v_make") + " " + rs.getString("v_model") + 
 								" $" + rs.getDouble("v_price"));
 						
 						//System.out.print(" " + lID);
@@ -390,9 +408,9 @@ public class source {
 					System.out.println("Reservation Made Successfully");
 					System.out.println("Reservation ID: " + resid);
 					System.out.println("Pickup date:" + pickupDate);
-					System.out.println("At location " + lID);
+					//System.out.println("At location " + lID);
 
-					// ----------------------- PRINT OUT INFO RESID VEHICLE DATE TO PICK UP ---------------
+					
 					
 				}
 				catch(SQLException e) {}
@@ -459,7 +477,7 @@ public class source {
 					
 					
 					//sc.nextLine();	
-					System.out.println("After CUSTMAX BEFORE UPDATE ");
+					//System.out.println("After CUSTMAX BEFORE UPDATE ");
 					//pstat = conn.prepareStatement(sqlIn);
 					String sqlIn = "insert into reservation(res_reservationid, res_rentalid, res_locationid, res_pickup, " + 
 							" res_custid, res_vehicleid) values(?,?,?,?,?,?)";
@@ -475,7 +493,7 @@ public class source {
 					System.out.println("Reservation Made Successfully");
 					System.out.println("Reservation ID: " + resid);
 					System.out.println("Pickup date:" + pickupDate);
-					System.out.println("At location " + lID);
+					//System.out.println("At location " + lID);
 				}
 				catch(SQLException e) {}
 				break;
@@ -562,7 +580,7 @@ public class source {
 					System.out.println("Reservation Made Successfully");
 					System.out.println("Reservation ID: " + resid);
 					System.out.println("Pickup date:" + pickupDate);
-					System.out.println("At location " + lID);
+					//System.out.println("At location " + lID);
 				}
 				catch(SQLException e) {}
 				break;
@@ -676,7 +694,7 @@ public class source {
 					System.out.println("Pickup date:" + pickupDate);
 					System.out.println("At location " + lID);
 
-					
+					return;
 					
 				}
 				
@@ -697,31 +715,34 @@ public class source {
 		try {
 			System.out.println("Please Enter Your Name " );
 			String name = sc.nextLine();
-			String sql = "SELECT c_name, res_pickup, l_address, l_state  FROM customer,reservation,location" +
+			String sql = "SELECT res_reservationid, c_name, res_pickup, l_address, l_state  FROM customer,reservation,location" +
 					" WHERE c_name = '" + name +"' AND c_custid = res_custid AND res_locationid = l_locationid";
 			
 		
 			pstat = conn.prepareStatement(sql);
 			
-			System.out.println("Before while");
+			
 			ResultSet rs = pstat.executeQuery();
-			System.out.println("After execute query");
+			
 			while(rs.next()) {
-				System.out.print(rs.getString("c_name") + rs.getString("res_pickup") + rs.getString("l_address") + rs.getString("l_state"));
+				System.out.print("Res id." + rs.getInt("res_reservationid") + " " + rs.getString("c_name") + " " + rs.getString("res_pickup") + 
+						" reserved at address " + rs.getString("l_address") + "," + rs.getString("l_state"));
 				System.out.println();
 			}
-				System.out.println("Would You Like To Cancel This Reservation? y/n");
+				System.out.println("\nWould You Like To Cancel This Reservation? yes/no");
 				String cancel = sc.nextLine();
-				if(cancel == "y") {
-					
+				if(cancel.equals("yes")) {
+					System.out.println("Enter your reservation id");
+					int id = sc.nextInt();
+					sc.nextLine();
 					String sql1 = "DELETE FROM reservation WHERE res_reservationid = ?";
 					pstat = conn.prepareStatement(sql1);
-					pstat.setInt(1, 102);
+					pstat.setInt(1,id);
 					pstat.executeUpdate();
 					System.out.println("Reservation Canceled.");
 				}
-				else
-					subMenu(conn,pstat);
+				//else
+				//	subMenu(conn,pstat);
 			
 		}
 			catch(SQLException e) {}
@@ -732,7 +753,7 @@ public class source {
 		 * - Input
 		 * 		- Get Customer Name
 		 * - Search DB for most recent rental or all of customers transactions?
-		 * - Display info to customer
+		 * - Display info to customer	
 		 * - Update Vehicle Count +1
 		 */
 		public static void billing(Connection conn, PreparedStatement pstat) {
@@ -748,9 +769,10 @@ public class source {
 				
 				ResultSet rs = pstat.executeQuery();
 				System.out.println("Before While");
+				
 				while(rs.next()) {
 					System.out.println("Name: " + rs.getString("c_name") + "  Reservation Date: " + rs.getString("res_pickup") +  "  Days Rented: "+ 
-							rs.getString("b_daysrented") + "  Total Due: " + rs.getDouble("total"));
+							rs.getInt("b_daysrented") + "  Total Due: " + rs.getDouble("total"));
 					}
 				//String sql1 = "UPDATE vehicle " + "SET v_avail = 'Yes' WHERE ...";
 			}
