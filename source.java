@@ -178,78 +178,80 @@ public class source {
 			
 		}while(flag != true);
 		
-		System.out.println("What day would you like to pick up(mm-dd)? " );
-		String pickupDate = sc.nextLine();
-		
-		//System.out.println("What day would you like to return(mm-dd)? ");
-		System.out.println("How many days would you like to rent for? ");
-		int returnDate = sc.nextInt();
-		//---------MAY NEED to sc.nectLine();
-		System.out.println("These vehicles are available for rent on " + pickupDate + "\n");
-		
-		int vch;	//vehicle choice
-		
-		/*
-		 		Put reservation ID in location table?
-				can go from reservation -> location but not location -> reservation
-		*/
 		try {
-			String sql = "SELECT v_id,v_year,v_make, v_model,v_price FROM vehicle,reservation WHERE res_locationid = " + lID +
-						" AND res_vehicleid = v_vehicleid";
+			
+			// Print all vehicles from location (lID)
+			String sql = "SELECT v_vehicleid,v_year,v_make, v_model,v_price,res_locationid FROM vehicle,reservation WHERE res_locationid = " + lID +
+				" AND res_vehicleid = v_vehicleid";
 			pstat = conn.prepareStatement(sql);
 			ResultSet rs = pstat.executeQuery();
 			
+			System.out.println("before while loop");
+			
 			while(rs.next()) {
-				System.out.println("\nid no. " + rs.getInt("v_id") + rs.getString("v_year") + rs.getString("v_make") + 
-						rs.getString("v_model") + rs.getString("v_price"));
-				
+				System.out.print("\nid:" + rs.getInt("v_vehicleid") + " " + rs.getString("v_year") + " " + rs.getString("v_make") + 
+						" " + rs.getString("v_model") + " $" + rs.getString("v_price") + " at location id " + rs.getInt("res_locationid"));						
 			}
-			
-			
-			System.out.println("Choose a Vehicle id or -1 to go back");
-			vch = sc.nextInt();
-			sc.nextLine();
-			if(vch == -1)
-				return;			
-			
-			// ----------- TOOK OUT returndate AND returnrentalid from table
-			String sqlIn = "insert into reservation(res_reservationid, res_rentalid, res_locationid, res_pickupdate, " + 
-						" res_custid, res_vehicleid) values(?,?,?,?,?,?)";
+			System.out.println();
+			System.out.println("Select vehicle id to begin reservation or enter -1 to go back");
 
+			int vid = sc.nextInt();
+			sc.nextLine();
+			if(vid == -1)
+				return;
+
+			System.out.println("What day would you like to pick up(mm-dd)? " );
+			String pickupDate = sc.nextLine();
+			
+			System.out.println("How many days would you like to rent for? ");
+			int returnDate = sc.nextInt();
+			sc.nextLine();
+			
+		
+								
 			// Variables to store max
 			int resid,rentalid,custid;
-
+			
+			
 			// Query for reservationid max and increment++
 			String resmax = "SELECT MAX(res_reservationid) FROM reservation";
 			pstat = conn.prepareStatement(resmax);
 			rs = pstat.executeQuery();
 			resid = rs.getInt("MAX(res_reservationid)");
 			resid++;
-
+			
+			
+			
 			// Query for MAX rentalid and increment++
-			String rentmax = "SELECT MAX(r_rentalid) FROM rental";
+			String rentmax = "SELECT MAX(res_rentalid) FROM reservation";
 			pstat = conn.prepareStatement(rentmax);
 			rs = pstat.executeQuery();
-			rentalid = rs.getInt("MAX(r_rentalid)");
+			rentalid = rs.getInt("MAX(res_rentalid)");
 			rentalid++;
-
+			System.out.println(rentalid);
 			// Query for MAX custid and increment++
-			String custmax = "SELECT MAX(c_custid) FROM customer";
+			String custmax = "SELECT MAX(res_custid) FROM reservation";
 			pstat = conn.prepareStatement(custmax);
 			rs = pstat.executeQuery();
-			custid = rs.getInt("MAX(c_custid)");
+			custid = rs.getInt("MAX(res_custid)");
 			custid++;
-			sc.nextLine();	
-
-			pstat = conn.prepareStatement(sqlIn);
+			System.out.println(custid);
 			
+			//sc.nextLine();	
+			System.out.println("After CUSTMAX BEFORE UPDATE ");
+			//pstat = conn.prepareStatement(sqlIn);
+			String sqlIn = "insert into reservation(res_reservationid, res_rentalid, res_locationid, res_pickup, " + 
+					" res_custid, res_vehicleid) values(?,?,?,?,?,?)";
+			pstat = conn.prepareStatement(sqlIn);
 			pstat.setInt(1,resid);
 			pstat.setInt(2,rentalid);			
 			pstat.setInt(3,lID);
 			pstat.setString(4,pickupDate);
 			pstat.setInt(5,custid);
-			pstat.setInt(6,vch);
+			pstat.setInt(6,vid);
+			
 			pstat.executeUpdate();
+			System.out.println("after update");
 
 			// ----------------------- PRINT OUT INFO RESID VEHICLE DATE TO PICK UP ---------------
 		}
