@@ -72,7 +72,44 @@ public class source {
 	}
 	
 	
-	//public static void addCustomer
+	public static void addCustomer(Connection conn, PreparedStatement pstat) {
+		System.out.println("Enter your full name.");
+		String name = sc.nextLine();
+		System.out.println("Enter your address");
+		String address = sc.nextLine();
+		System.out.println("Enter state.");
+		String state = sc.nextLine();
+		
+		try {
+		String custmax = "SELECT MAX(c_custid) FROM customer";
+		pstat = conn.prepareStatement(custmax);
+		ResultSet rs = pstat.executeQuery();
+		int custid = rs.getInt("MAX(c_custid)");
+		custid++;
+		
+		String rentmax = "SELECT MAX(c_rentalid) FROM customer";
+		pstat = conn.prepareStatement(rentmax);
+		rs = pstat.executeQuery();
+		int rentalid = rs.getInt("MAX(c_rentalid)");
+		rentalid++;
+		
+		String sqlIn = "insert into customer(c_custid, c_name, c_rentalid, c_address, c_state) " + 
+				"  values(?,?,?,?,?)";
+		pstat = conn.prepareStatement(sqlIn);
+		pstat.setInt(1,custid);
+		pstat.setString(2,name);			
+		pstat.setInt(3,rentalid);
+		pstat.setString(4,address);
+		pstat.setString(5,state);
+		
+		
+		pstat.executeUpdate();
+		System.out.println("Table updated");
+		
+		
+		}
+		catch(SQLException e) {}
+	}
 	/*
 	 *- subMenu will first ask if new or return customer.
 	 *- if new -> get info -> create customer (function?)
@@ -83,24 +120,20 @@ public class source {
 	 *  - 
 	 *	- Exit
 	 * 
-	 * TODO: Fix All Queries
+	 *
 	 * 
 	 */
 	
 	
 	public static void subMenu(Connection conn, PreparedStatement pstat) {
 		int ch;
-		String newName, retName, address;
+		String retName;
 		
 		System.out.println("\n1: New Customer \n2: Returning Customer");
 		ch = sc.nextInt();
 		sc.nextLine();
 		if(ch == 1) {
-			System.out.println("Enter Your Full Name followed by your Address");
-			
-			newName = sc.nextLine();
-			//System.out.println("Enter Your Address:");
-			address = sc.nextLine();
+			addCustomer(conn,pstat);
 		}
 		
 		if (ch == 2) {
@@ -145,15 +178,13 @@ public class source {
 	 * - Take input / NAME/ l_id /
 	 * - Print out reservation
 	 * 
-	 * TODO: - Fix Location Display
-	 * 		 - Fix All queries
 	 */
 	public static void reservation(Connection conn, PreparedStatement pstat) {
 		int lID;
 		boolean flag = false;
 		System.out.println("Which location would you like to pick up at(id #)? ");
 		do {
-			// ***** NEED TO FIX DISPLAY ******
+			
 			System.out.println(
 					"1	3 Roxbury Place			309-892-3092		IL\n" + 
 					"2	3 Orin Terrace			228-781-3694		MS\n" + 
@@ -228,14 +259,14 @@ public class source {
 			rs = pstat.executeQuery();
 			rentalid = rs.getInt("MAX(res_rentalid)");
 			rentalid++;
-			System.out.println(rentalid);
+			
 			// Query for MAX custid and increment++
 			String custmax = "SELECT MAX(res_custid) FROM reservation";
 			pstat = conn.prepareStatement(custmax);
 			rs = pstat.executeQuery();
 			custid = rs.getInt("MAX(res_custid)");
 			custid++;
-			System.out.println(custid);
+			
 			
 			//sc.nextLine();	
 			System.out.println("After CUSTMAX BEFORE UPDATE ");
@@ -251,7 +282,10 @@ public class source {
 			pstat.setInt(6,vid);
 			
 			pstat.executeUpdate();
-			System.out.println("after update");
+			System.out.println("Reservation Made Successfully");
+			System.out.println("Reservation ID: " + resid);
+			System.out.println("Pickup date:" + pickupDate);
+			System.out.println("At location " + lID);
 
 			// ----------------------- PRINT OUT INFO RESID VEHICLE DATE TO PICK UP ---------------
 		}
@@ -330,17 +364,17 @@ public class source {
 					rs = pstat.executeQuery();
 					rentalid = rs.getInt("MAX(res_rentalid)");
 					rentalid++;
-					System.out.println(rentalid);
+					
 					// Query for MAX custid and increment++
 					String custmax = "SELECT MAX(res_custid) FROM reservation";
 					pstat = conn.prepareStatement(custmax);
 					rs = pstat.executeQuery();
 					custid = rs.getInt("MAX(res_custid)");
 					custid++;
-					System.out.println(custid);
+					
 					lID = 2;
 					//sc.nextLine();	
-					System.out.println("After CUSTMAX BEFORE UPDATE ");
+					
 					//pstat = conn.prepareStatement(sqlIn);
 					String sqlIn = "insert into reservation(res_reservationid, res_rentalid, res_locationid, res_pickup, " + 
 							" res_custid, res_vehicleid) values(?,?,?,?,?,?)";
@@ -353,7 +387,10 @@ public class source {
 					pstat.setInt(6,vid);
 					
 					pstat.executeUpdate();
-					System.out.println("after update");
+					System.out.println("Reservation Made Successfully");
+					System.out.println("Reservation ID: " + resid);
+					System.out.println("Pickup date:" + pickupDate);
+					System.out.println("At location " + lID);
 
 					// ----------------------- PRINT OUT INFO RESID VEHICLE DATE TO PICK UP ---------------
 					
@@ -412,14 +449,14 @@ public class source {
 					rs = pstat.executeQuery();
 					rentalid = rs.getInt("MAX(res_rentalid)");
 					rentalid++;
-					System.out.println(rentalid);
+					
 					// Query for MAX custid and increment++
 					String custmax = "SELECT MAX(res_custid) FROM reservation";
 					pstat = conn.prepareStatement(custmax);
 					rs = pstat.executeQuery();
 					custid = rs.getInt("MAX(res_custid)");
 					custid++;
-					System.out.println(custid);
+					
 					
 					//sc.nextLine();	
 					System.out.println("After CUSTMAX BEFORE UPDATE ");
@@ -435,7 +472,10 @@ public class source {
 					pstat.setInt(6,vid);
 					
 					pstat.executeUpdate();
-					System.out.println("after update");
+					System.out.println("Reservation Made Successfully");
+					System.out.println("Reservation ID: " + resid);
+					System.out.println("Pickup date:" + pickupDate);
+					System.out.println("At location " + lID);
 				}
 				catch(SQLException e) {}
 				break;
@@ -496,14 +536,14 @@ public class source {
 					rs = pstat.executeQuery();
 					rentalid = rs.getInt("MAX(res_rentalid)");
 					rentalid++;
-					System.out.println(rentalid);
+					
 					// Query for MAX custid and increment++
 					String custmax = "SELECT MAX(res_custid) FROM reservation";
 					pstat = conn.prepareStatement(custmax);
 					rs = pstat.executeQuery();
 					custid = rs.getInt("MAX(res_custid)");
 					custid++;
-					System.out.println(custid);
+					
 					
 					//sc.nextLine();	
 					System.out.println("After CUSTMAX BEFORE UPDATE ");
@@ -519,7 +559,10 @@ public class source {
 					pstat.setInt(6,vid);
 					
 					pstat.executeUpdate();
-					System.out.println("after update");
+					System.out.println("Reservation Made Successfully");
+					System.out.println("Reservation ID: " + resid);
+					System.out.println("Pickup date:" + pickupDate);
+					System.out.println("At location " + lID);
 				}
 				catch(SQLException e) {}
 				break;
@@ -607,18 +650,16 @@ public class source {
 					rs = pstat.executeQuery();
 					rentalid = rs.getInt("MAX(res_rentalid)");
 					rentalid++;
-					System.out.println(rentalid);
+					
 					// Query for MAX custid and increment++
 					String custmax = "SELECT MAX(res_custid) FROM reservation";
 					pstat = conn.prepareStatement(custmax);
 					rs = pstat.executeQuery();
 					custid = rs.getInt("MAX(res_custid)");
 					custid++;
-					System.out.println(custid);
 					
-					//sc.nextLine();	
-					System.out.println("After CUSTMAX BEFORE UPDATE ");
-					//pstat = conn.prepareStatement(sqlIn);
+					
+					
 					String sqlIn = "insert into reservation(res_reservationid, res_rentalid, res_locationid, res_pickup, " + 
 							" res_custid, res_vehicleid) values(?,?,?,?,?,?)";
 					pstat = conn.prepareStatement(sqlIn);
@@ -630,7 +671,10 @@ public class source {
 					pstat.setInt(6,vid);
 					
 					pstat.executeUpdate();
-					System.out.println("after update");
+					System.out.println("Reservation Made Successfully");
+					System.out.println("Reservation ID: " + resid);
+					System.out.println("Pickup date:" + pickupDate);
+					System.out.println("At location " + lID);
 
 					
 					
