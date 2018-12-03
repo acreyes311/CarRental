@@ -207,9 +207,9 @@ public class source {
 			System.out.println(
 					"1	3 Roxbury Place			309-892-3092		IL\n" + 
 					"2	3 Orin Terrace			228-781-3694		MS\n" + 
-					"3	55481 Loftsgordon Court	916-229-5953		CA\n" + 
+					"3	55481 Loftsgordon Court		916-229-5953		CA\n" + 
 					"4	0999 Ridgeway Point		307-124-5700		WY\n" + 
-					"5	1614 Anderson Avenue	704-828-5125		NC\n" + 
+					"5	1614 Anderson Avenue		704-828-5125		NC\n" + 
 					"6	51 Caliangt Park		816-722-4896		MO\n" + 
 					"7	935 Paget Plaza			606-997-5229		KY\n" + 
 					"8	052 Linden Avenue		518-812-4920		NY\n" + 
@@ -236,8 +236,7 @@ public class source {
 			pstat = conn.prepareStatement(sql);
 			ResultSet rs = pstat.executeQuery();
 			
-			System.out.println("before while loop");
-			
+						
 			while(rs.next()) {
 				System.out.print("\nid:" + rs.getInt("v_vehicleid") + " " + rs.getString("v_year") + " " + rs.getString("v_make") + 
 						" " + rs.getString("v_model") + " $" + rs.getString("v_price") + " at location id " + rs.getInt("res_locationid"));						
@@ -250,7 +249,7 @@ public class source {
 			if(vid == -1)
 				return;
 
-			System.out.println("What day would you like to pick up(mm-dd)? " );
+			System.out.println("What date would you like to pick up(yyyy-mm-dd)? " );
 			String pickupDate = sc.nextLine();
 			
 			System.out.println("How many days would you like to rent for? ");
@@ -319,7 +318,7 @@ public class source {
 		int ch;
 		do {		
 			
-			System.out.println("Choose criteria number to search by." );
+			System.out.println("\nChoose option number to search by." );
 			System.out.println("1:Year \n2:Make \n3:Model \n4:location \n0:Go Back");
 			ch = sc.nextInt();
 			sc.nextLine();
@@ -338,7 +337,7 @@ public class source {
 					ResultSet rs = pstat.executeQuery();
 					while(rs.next()) {
 						lID = rs.getInt("v_vehicleid");
-						System.out.print("Location:" + lID + " " + rs.getString("v_year") + " " + rs.getString("v_make") + " " + rs.getString("v_model") + 
+						System.out.print("Vehicle id.:" + lID + " " + rs.getString("v_year") + " " + rs.getString("v_make") + " " + rs.getString("v_model") + 
 								" $" + rs.getDouble("v_price"));
 						
 						//System.out.print(" " + lID);
@@ -352,7 +351,7 @@ public class source {
 					if(vid == -1)
 						break;
 
-					System.out.println("What day would you like to pick up(mm-dd)? " );
+					System.out.println("What date would you like to pick up(yyyy-mm-dd)? " );
 					String pickupDate = sc.nextLine();
 					
 					System.out.println("How many days would you like to rent for? ");
@@ -442,7 +441,7 @@ public class source {
 					if(vid == -1)
 						break;
 
-					System.out.println("What day would you like to pick up(mm-dd)? " );
+					System.out.println("What date would you like to pick up(yyyy-mm-dd)? " );
 					String pickupDate = sc.nextLine();
 					
 					System.out.println("How many days would you like to rent for? ");
@@ -528,7 +527,7 @@ public class source {
 					if(vid == -1)
 						break;
 
-					System.out.println("What day would you like to pick up(mm-dd)? " );
+					System.out.println("What date would you like to pick up(yyyy-mm-dd)? " );
 					String pickupDate = sc.nextLine();
 					
 					System.out.println("How many days would you like to rent for? ");
@@ -600,9 +599,9 @@ public class source {
 					System.out.println (
 							"1	3 Roxbury Place			309-892-3092		IL\n" + 
 							"2	3 Orin Terrace			228-781-3694		MS\n" + 
-							"3	55481 Loftsgordon Court	916-229-5953		CA\n" + 
+							"3	55481 Loftsgordon Court		916-229-5953		CA\n" + 
 							"4	0999 Ridgeway Point		307-124-5700		WY\n" + 
-							"5	1614 Anderson Avenue	704-828-5125		NC\n" + 
+							"5	1614 Anderson Avenue		704-828-5125		NC\n" + 
 							"6	51 Caliangt Park		816-722-4896		MO\n" + 
 							"7	935 Paget Plaza			606-997-5229		KY\n" + 
 							"8	052 Linden Avenue		518-812-4920		NY\n" + 
@@ -628,8 +627,7 @@ public class source {
 					pstat = conn.prepareStatement(sql);
 					ResultSet rs = pstat.executeQuery();
 					
-					System.out.println("before while loop");
-					
+										
 					while(rs.next()) {
 						System.out.print("\nid:" + rs.getInt("v_vehicleid") + " " + rs.getString("v_year") + " " + rs.getString("v_make") + 
 								" " + rs.getString("v_model") + " $" + rs.getString("v_price") + " at location id " + rs.getInt("res_locationid"));						
@@ -642,7 +640,7 @@ public class source {
 					if(vid == -1)
 						break;
 
-					System.out.println("What day would you like to pick up(mm-dd)? " );
+					System.out.println("What date would you like to pick up(yyyy-mm-dd)? " );
 					String pickupDate = sc.nextLine();
 					
 					System.out.println("How many days would you like to rent for? ");
