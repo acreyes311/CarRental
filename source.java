@@ -323,7 +323,7 @@ public class source {
 			System.out.println("1:Year \n2:Make \n3:Model \n4:location \n0:Go Back");
 			ch = sc.nextInt();
 			sc.nextLine();
-			int lID = 0;
+			int lID = 1; // its this here
 			switch(ch) {
 			//  CASE 1 Print All vehicles from this year	
 			case 1:				
@@ -390,7 +390,7 @@ public class source {
 					custid = rs.getInt("MAX(res_custid)");
 					custid++;
 					
-					lID = 2;
+					//lID = 2;
 					//sc.nextLine();	
 					
 					//pstat = conn.prepareStatement(sqlIn);
@@ -431,7 +431,9 @@ public class source {
 					while(rs.next()) {
 						// May need to add spaces " " ?						
 						System.out.print("id." + rs.getInt("v_vehicleid") + " " + rs.getString("v_year") + " " + rs.getString("v_make") + 
-								" " + rs.getString("v_model") + " $" + rs.getDouble("v_price") + " location id." + rs.getInt("res_locationid"));
+								" " + rs.getString("v_model") + " $" + rs.getDouble("v_price") + " location id.");
+						lID = rs.getInt("res_locationid");
+						System.out.print(lID);
 						System.out.println();
 					}
 					System.out.println("Select vehicle id to begin reservation or enter -1 to go back");
@@ -564,7 +566,7 @@ public class source {
 					
 					
 					//sc.nextLine();	
-					System.out.println("After CUSTMAX BEFORE UPDATE ");
+					//System.out.println("After CUSTMAX BEFORE UPDATE ");
 					//pstat = conn.prepareStatement(sqlIn);
 					String sqlIn = "insert into reservation(res_reservationid, res_rentalid, res_locationid, res_pickup, " + 
 							" res_custid, res_vehicleid) values(?,?,?,?,?,?)";
