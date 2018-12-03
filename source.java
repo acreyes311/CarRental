@@ -242,7 +242,7 @@ public class source {
 						" " + rs.getString("v_model") + " $" + rs.getString("v_price") + " at location id " + rs.getInt("res_locationid"));						
 			}
 			System.out.println();
-			System.out.println("Select vehicle id to begin reservation or enter -1 to go back");
+			System.out.println("\nSelect vehicle id to begin reservation or enter -1 to go back");
 
 			int vid = sc.nextInt();
 			sc.nextLine();
@@ -428,7 +428,7 @@ public class source {
 					pstat = conn.prepareStatement(sqlM);
 					ResultSet rs = pstat.executeQuery();
 					while(rs.next()) {
-						// May need to add spaces " " ?						
+											
 						System.out.print("id." + rs.getInt("v_vehicleid") + " " + rs.getString("v_year") + " " + rs.getString("v_make") + 
 								" " + rs.getString("v_model") + " $" + rs.getDouble("v_price") + " location id.");
 						lID = rs.getInt("res_locationid");
@@ -476,10 +476,7 @@ public class source {
 					custid = rs.getInt("MAX(res_custid)");
 					custid++;
 					
-					
-					//sc.nextLine();	
-					//System.out.println("After CUSTMAX BEFORE UPDATE ");
-					//pstat = conn.prepareStatement(sqlIn);
+				
 					String sqlIn = "insert into reservation(res_reservationid, res_rentalid, res_locationid, res_pickup, " + 
 							" res_custid, res_vehicleid) values(?,?,?,?,?,?)";
 					pstat = conn.prepareStatement(sqlIn);
@@ -563,10 +560,6 @@ public class source {
 					custid = rs.getInt("MAX(res_custid)");
 					custid++;
 					
-					
-					//sc.nextLine();	
-					//System.out.println("After CUSTMAX BEFORE UPDATE ");
-					//pstat = conn.prepareStatement(sqlIn);
 					String sqlIn = "insert into reservation(res_reservationid, res_rentalid, res_locationid, res_pickup, " + 
 							" res_custid, res_vehicleid) values(?,?,?,?,?,?)";
 					pstat = conn.prepareStatement(sqlIn);
@@ -587,15 +580,14 @@ public class source {
 				break;
 
 			//  CASE 4 Print location to display and wait for input.
-			// Is there a different way to display and get input, through sql?
-			// Then query to print all vehicles from that location.	
+				
 			case 4:
 				
 				//int lID;
 				boolean flag = false;
 				System.out.println("Which location would you like to display? Enter id # ");
 				do {
-					// ***** NEED TO FIX DISPLAY ******
+					
 					System.out.println (
 							"1	3 Roxbury Place			309-892-3092		IL\n" + 
 							"2	3 Orin Terrace			228-781-3694		MS\n" + 
@@ -630,10 +622,10 @@ public class source {
 										
 					while(rs.next()) {
 						System.out.print("\nid:" + rs.getInt("v_vehicleid") + " " + rs.getString("v_year") + " " + rs.getString("v_make") + 
-								" " + rs.getString("v_model") + " $" + rs.getString("v_price") + " at location id " + rs.getInt("res_locationid"));						
+								" " + rs.getString("v_model") + " $" + rs.getString("v_price") + " at location " + rs.getInt("res_locationid"));						
 					}
 					System.out.println();
-					System.out.println("Select vehicle id to begin reservation or enter -1 to go back");
+					System.out.println("\nSelect vehicle id to begin reservation or enter -1 to go back");
 
 					int vid = sc.nextInt();
 					sc.nextLine();
